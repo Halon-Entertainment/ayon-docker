@@ -15,6 +15,7 @@ services:
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "db:/var/lib/postgresql/data"
+      - "./postgres-init:/docker-entrypoint-initdb.d"
 
     environment:
       - "POSTGRES_USER=ayon"
@@ -47,8 +48,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    # uncomment for older versions of Docker (>4.0.0) and comment out above "depends on" section.
-    #depends_on:
+      # uncomment for older versions of Docker (>4.0.0) and comment out above "depends on" section.
+      #depends_on:
       #- postgres
       #- redis
 
@@ -63,7 +64,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
 
       # uncomment the following line if you need to work on the backend code
-      # - "./backend:/backend"
+      - "./backend:/backend"
 
 volumes:
   db: {}

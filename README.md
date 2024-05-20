@@ -1,35 +1,43 @@
 ayon-docker
 ===========
 
-This is the official Docker-based deployment for the Ayon Server. 
-Ayon is a robust tool designed to manage and automate workflows in the animation and visual effects industries.
+Make a file in /postgres-init/init-db.sql with the following content:
 
-The Docker image includes both:
+- Replace `ayon` with your desired password
 
-- [ayon-backend](https://github.com/ynput/ayon-backend): The server backend
-- [ayon-frontend](https://github.com/ynput/ayon-frontend): Web interface
+```
+DO $$
+BEGIN
+    -- Check if role 'ayon' already exists
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'ayon') THEN
+        -- Create role 'ayon' if it doesn't exist
+        CREATE ROLE ayon WITH LOGIN PASSWORD 'ayon';
+        ALTER ROLE ayon CREATEDB;
+    END IF;
 
+    -- Check if database 'ayon' already exists
+    IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'ayon') THEN
+        -- Create database 'ayon' if it doesn't exist
+        CREATE DATABASE ayon OWNER ayon;
+    END IF;
+END $$;
+```
 
-Installation
-------------
+*WINDOWS*
 
-You can use the provided `docker-compose.yml` as a template to start your own deployment.
+1. Clone ayon-docker repository to your local machine.
+2. Tweak the docker-compose.yml file according to your requirements.
+3. You may use the .env file to set environment variables.
+4. Comment-out or delete the - "/etc/localtime:/etc/localtime:ro" line from the docker-compose.yml file.
+5. Run the stack using docker compose up -d
+6. Run manage.ps1 setup to set up the server. If you get a permission error, you may need to set your execution policy to RemoteSigned by running Set-ExecutionPolicy RemoteSigned in PowerShell stackoverflow.
+7. Once the setup is complete, navigate to http://localhost:5000/ in your web browser and log in as admin/admin.
 
-For more information on installation and user guides, 
-please visit our [documentation website](https://ayon.ynput.io/docs/system_introduction).
-
-### Demo projects
-
-To help you get familiar with the interface, the `demo/` directory includes three demo project templates:
-
-- `demo_Commercial`
-- `demo_Big_Episodic`
-- `demo_Big_Feature`
-
-To deploy these demo projects to your server, run:
-
-- `make demo` on Unix systems
-- `manage.ps1` demo on Windows
-
-*NOTE: These demo projects can take a while to create.*
-
+*LINUX*
+1. Clone ayon-docker repository to the machine.
+2. Tweak the docker-compose.yml file according to your requirements.
+3. You may use the .env file to set environment variables.
+5. Run the stack using docker compose up -d
+6. Run make setup
+7. Once the setup is complete, navigate to http://localhost:5000/
+8. Log in as admin/admin.

@@ -31,7 +31,7 @@ COPY ./backend/pyproject.toml /backend/pyproject.toml
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-    postgresql-client
+    postgresql-client-15
 
 RUN \
   pip install -U pip && \
@@ -49,10 +49,13 @@ COPY ./backend/setup /backend/setup
 COPY ./backend/schemas /backend/schemas
 COPY ./backend/ayon_server /backend/ayon_server
 COPY ./backend/api /backend/api
-COPY ./RELEAS[E] /backend/RELEASE
+COPY ./RELEASE /backend/RELEASE
 
 COPY --from=build /frontend/dist/ /frontend
 
 RUN sh -c 'date +%y%m%d%H%M > /backend/BUILD_DATE'
 
-CMD ["/bin/bash", "/backend/start.sh"]
+EXPOSE 5000
+
+# Ensure PostgreSQL is running when the container starts
+CMD ["sh", "/backend/start.sh"]
