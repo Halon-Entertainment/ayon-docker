@@ -56,6 +56,7 @@ COPY --from=build /frontend/dist/ /frontend
 RUN sh -c 'date +%y%m%d%H%M > /backend/BUILD_DATE'
 
 EXPOSE 5000
+EXPOSE 5432
 
 # Ensure PostgreSQL is running when the container starts
 CMD ["sh", "/backend/start.sh"]
